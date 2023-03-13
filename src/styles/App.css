@@ -10,6 +10,7 @@
 
 .App{
   width: 1000px;
+  padding: 0 20px ;
 }
 
 .post{
@@ -19,4 +20,23 @@
   margin-top: 15px;
   justify-content: space-between;
   align-items: center;
+}
+
+
+
+.post-enter{
+  transform: translateX(-350px);
+}
+.post-enter-active{
+  transform: translateX(0px);
+  transition: all 500ms ease-in;
+}
+
+.post-exit{
+  opacity: 1;
+}
+
+.post-exit-active{
+    transform: translateX(-350px);
+  transition: all 500ms ease-in;
 }

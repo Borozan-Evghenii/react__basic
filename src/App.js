@@ -1,7 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import "./styles/App.css";
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
+import PostFilter from "./components/PostFilter";
+import Modal from "./UI/modal/Modal";
+import Button from "./UI/button/Button";
 
 function App() {
   const [posts, setPosts] = useState([
@@ -11,6 +14,25 @@ function App() {
     { id: 4, title: "Angular", body: "Javascript is a framework" },
     { id: 5, title: "React", body: "Javascript is a framework" },
   ]);
+
+  const [filter, setFilter] = useState({ sort: "", query: "" });
+  const [visible, setVisible] = useState(false);
+
+  const sortedPost = useMemo(() => {
+    console.log("worke");
+    if (filter.sort) {
+      return [...posts].sort((a, b) =>
+        a[filter.sort].localeCompare(b[filter.sort])
+      );
+    }
+    return posts;
+  }, [filter.sort, posts]);
+
+  const sortedAndSearchedPosts = useMemo(() => {
+    return sortedPost.filter((post) =>
+      post.title.toLowerCase().includes(filter.query.toLowerCase())
+    );
+  }, [filter.query, sortedPost]);
 
   // const bodyInputRef = useRef();
   /*Pentru a accesa un element folosind use ref
@@ -24,6 +46,7 @@ function App() {
 
   function addNewPost(newPost) {
     setPosts([...posts, newPost]);
+    setVisible(false);
   }
 
   function removePost(post) {
@@ -32,12 +55,17 @@ function App() {
 
   return (
     <div className="App">
-      <PostForm addNewPost={addNewPost} />
-      {posts.length !== 0 ? (
-        <PostList posts={posts} title={"Posts list"} remove={removePost} />
-      ) : (
-        <h1 style={{ textAlign: "center" }}>Dont have posts</h1>
-      )}
+      <Modal visible={visible} setVisible={setVisible}>
+        <PostForm addNewPost={addNewPost} />
+      </Modal>
+      <Button onClick={() => setVisible(true)}>Create Post</Button>
+      <hr style={{ marginTop: 20, marginBottom: 20 }} />
+      <PostFilter filter={filter} setFilter={setFilter} />
+      <PostList
+        posts={sortedAndSearchedPosts}
+        title={"Posts list"}
+        remove={removePost}
+      />
     </div>
   );
 }
