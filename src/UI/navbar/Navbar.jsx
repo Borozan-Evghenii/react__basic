@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import cl from "./Navbar.module.css";
+import Button from "../button/Button";
+import { AuthContext } from "../../context/context";
 
 export default function Navbar() {
   const navigation = [
@@ -8,6 +10,12 @@ export default function Navbar() {
     { url: "/", name: "Home" },
   ];
 
+  const { isAuth, setIsAuth } = useContext(AuthContext)
+
+  const exit = () => {
+    setIsAuth(false)
+    localStorage.removeItem('isAuth')
+  }
   return (
     <header className={cl.header}>
       {navigation.map((nav) => (
@@ -15,6 +23,7 @@ export default function Navbar() {
           {nav.name}
         </Link>
       ))}
+      {isAuth? <Button onClick={exit}>Exit</Button>: ''}
     </header>
   );
 }

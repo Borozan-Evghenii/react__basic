@@ -1,36 +1,56 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import postService from "./../API/postService";
 import { useState } from "react";
 import { useFetching } from "./../hooks/useFetching";
 import Loader from "./../UI/loader/Loader";
+import postService from "../API/postService";
 
 export default function Single() {
   const params = useParams();
-  const [data, setData] = useState({});
+  const [post, setPost] = useState({});
+  const [comments, setComments] = useState([]);
 
-  const [fetchingById, isLoading, error] = useFetching(async () => {
-    const response = await postService.getAllbyId(params.id);
-    await setData(response.data);
-    // await console.log(response);
+  const [fetchingById, isLoading, error] = useFetching(async (id) => {
+    const response = await postService.getAllbyId(id);
+    setPost(response.data);
+  });
+
+  const [fetchingComments, isCommentsLoading, CommentsError] = useFetching(async (id) => {
+    const response = await postService.getPostComments(id);
+    setComments(response.data);
   });
 
   useEffect(() => {
-    fetchingById();
-  });
+    fetchingById(params.id);
+    fetchingComments(params.id);
+  },[]);
 
   return (
     <div>
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="user__card">
-          {error}
-          <div className="user__name">{data.title}</div>
-          <div className="user__adress"></div>
+        <div className="post__card">
+            <h1 className="post__name">{ post.id}. {post.title}</h1>
+            <p className="post__body">{ post.body}</p>
         </div>
       )}
+
+
+
+      {isCommentsLoading ? (
+        <Loader />
+      ) : 
+          
+        (comments.map((comment) =>
+          <div className="commnets__wraper" style={{marginTop: 30}}>
+            <h3 className="post__name">{comment.name}</h3>
+            <p>{comment.body }</p>
+        </div>)
+            )
+          }
+      
     </div>
   );
 }

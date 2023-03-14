@@ -12,7 +12,7 @@
 }
 
 .App{
-  width: 1000px;
+  max-width: 1000px;
   padding: 0 20px ;
 }
 
